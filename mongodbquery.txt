@@ -1,0 +1,55 @@
+mongodb go query
+//////////
+type DBinstance struct{
+    Db *mongo.Client
+
+}
+var Mdb DBinstance
+func ConnectDb(){
+
+    client,err:=mongo.Connect(context.TODO(),options.Client(),ApplyURI("mongodb://localhost:27017"))
+    if err!=nil{
+        fmt.Println(err)
+    }
+    Mdb.Db=client
+}
+type User struct{
+    Id `bson:"_id"
+    Name `bson:"name"
+    Age `bson:"age"
+}
+.............insert:-
+var u1 User
+json.NewDecoder(r.Body).Decode(&u1)
+collection:=Mdb.Db.Database("database_name").Collection("collection_name")
+collection.InsertOne(context.TODO(),u1)
+
+--------------find:-------------
+
+var  u1 User
+v1:=mux.Vars(r)
+a1:=v1["id"]
+id:=strconv.Atoi(a1)
+filter:=bson.M{"_id",id}
+collection:=Mdb.Db.Database("db_name").Collection("colection_name")
+collection.FindOne(context.TODO(),filter).Decode(&u1)
+json.NewEncoder(w).Encode(u1)
+
+ -----------------update----------
+
+var u1 User
+json.NewDecoder(r.Body).Decode(&u1)
+filter:=bson.M{"_id",u1.Id}
+update:=bson.M{"$set":bson.M{"name":u1.Name,"age":u1.Age}}
+collection:=Mdb.Db.Database("db_name").Collection("collection_name")
+collection.UpdateOne(context.TODO(),filter,update)
+
+------------------delete-----------
+v1:=mux.Vars(r)
+v2:=v1["id"]
+id1:=strconv.Atoi(v2)
+filter:=bson.M{"_id",id1}
+collection:=Mdb.Db.Database("db_name").Collection("collection_name")
+collection.DeleteOne(context.TODO(),filter)
+----------------------------------------
+
